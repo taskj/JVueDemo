@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>v-text和v-html</title>
+</head>
+<body>
+
+    <div id="app">
+        <h4> {{ msg }} </h4>
+        <h4> {{ user.name }}, {{ user.msg }} </h4>
+        <h4> {{ age }} </h4>
+        <h4> {{ list[0] }} == {{ list[1] }} == {{ list[2] }} == {{  list[3] }}</h4>
+        <h4> {{ users[0].name }} </h4>
+        <h4> 在表达式中进行字母大写逻辑运算：{{ msg1.toUpperCase() }} </h4>
+        <h4 v-text="msg"></h4>
+        <h4 v-html="msglink"></h4>
+    </div>
+
+    <script src="./js/vue.js"></script>
+    <script>
+        const app = new Vue({
+            el: "#app",
+            data: {
+                msg: "你好",
+                msg1: "hello,taskj",
+                msglink: "<a href='https://www.baidu.com' target='_blank'>taskj欢迎您</a>",
+                user: {name:"taskj",msg: "欢迎登陆！"},
+                age: 23,
+                list: ["北京校区","上海校区","广州校区","深圳校区"],
+                users: [{name:'小明'},{name:'小红'},{name:'小强'}]
+            }
+        })
+    </script>
+
+</body>
+</html>

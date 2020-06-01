@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue事件定义和使用</title>
+</head>
+<body>
+
+    <div id="app">
+        <h3 v-text="msg"></h3>
+        <h3>{{ age }}</h3>
+        <!-- @click 等价于 v-on:click -->
+        <input type="button" value="点击年龄+1" @click="changeAge">
+        <input type="button" value="点击年龄-1" v-on:click="editAge">
+        <h3> guy: {{ guy.name }} ,{{ guy.age }} 岁 
+            <input type="button" value="点击修改guy为指定的值" @click="changeGuy('23','小红')">
+        </h3>
+    </div>
+
+    <script src="./js/vue.js"></script>
+    <script>
+        const app = new Vue({
+            el: "#app",
+            data: {
+                msg: "hello,欢迎登陆taskj的博客",
+                age: 22,
+                guy:{name:'小明',age:32}
+            },
+            methods: {
+                changeAge:function(){
+                    this.age++;
+                },
+                editAge:function(){
+                    this.age--;
+                },
+                changeGuy:function(age,name){
+                    this.guy.age = age;
+                    this.guy.name = name;
+                }
+            }
+        })
+    </script>
+
+</body>
+</html>
