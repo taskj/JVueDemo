@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>行项目添加例子</title>
+</head>
+<body>
+
+    <div id="app">
+        <input type="text" v-model="msg"><input type="button" value="添加行项目" @click="save">
+        <ul>
+            <li v-for="item,index in lists">
+                {{ index+1 }}{{ item }} <a href="javascript:void(0);" @click="delRow(index)">删除</a>
+            </li>
+        </ul>
+        <span>总数量：{{ lists.length }} 条</span><input type="button" value="删除所有" @click="delAll()">
+    </div>
+
+    <script src="./js/vue.js"></script>
+    <script>
+        const app = new Vue({
+            el: "#app",
+            data: {
+                lists:['来自小明的请假单','来自小红的出差申请单'],
+                msg:""
+            },
+            methods: {
+                save(){ //添加一条记录
+                    this.lists.push(this.msg);
+                },
+                delRow(index){ //根据下标删除一条记录
+                    this.lists.splice(index,1)
+                },
+                delAll(){
+                    this.lists = [];
+                }
+            }
+        })
+    </script>
+
+</body>
+</html>

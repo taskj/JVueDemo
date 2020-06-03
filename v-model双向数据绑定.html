@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>v-model双向数据绑定</title>
+</head>
+<body>
+
+    <div id="app">
+        <input type="text" v-model="msg">
+        <span>{{ msg }}</span>
+        <hr>
+        <input type="button" value="改变data中的值" @click="changeValue">
+    </div>
+
+    <script src="./js/vue.js"></script>
+    <script>
+        const app = new Vue({
+            el: "#app",
+            data:{
+               msg:""
+            },
+            methods:{
+                changeValue:function(){
+                    this.msg = "taskj博客"
+                }
+            }
+        })
+    </script>
+
+</body>
+</html>

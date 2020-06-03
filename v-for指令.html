@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>v-for指令</title>
+</head>
+<body>
+
+    <div id="app">
+        <span>{{ user.name }} {{ user.age }}</span>
+
+        <br>
+
+        <!--通过v-for遍历对象-->
+        <span v-for="(key,value,index) in user">
+            {{ key }} : {{ value }} : {{ index }}
+        </span>
+
+        <!--通过v-for遍历数组-->
+        <ul v-for="a,index in arr">
+            <li>{{ index }} : {{ a }}</li>
+        </ul>
+
+        <!--通过v-for遍历数组中的对象-->
+        <!--在v-for的时候加入:key用以给vue内部提供重用和排序的唯一key-->
+        <ul v-for="user,index in users" v-bind:key="user.id"> <!--v-bind:key等价:key-->
+            <li>{{ index+1 }} : {{ user.name }} : {{ user.age }}</li>
+        </ul>
+        
+    </div>
+
+
+
+    <script src="./js/vue.js"></script>
+    <script>
+        const app = new Vue({
+            el: "#app",
+            data:{
+                user:{name:"小明",age:23},
+                arr:["北京校区","上海校区","广州校区","深圳校区"],
+                users:[
+                    {id:"1",name:"小明",age:12},
+                    {id:"2",name:"小红",age:43},
+                    {id:"3",name:"小强",age:32},
+                    {id:"4",name:"小李",age:44},
+                    {id:"5",name:"小张",age:99}
+                ]
+            }
+        })
+    </script>
+
+</body>
+</html>
