@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue组件prop属性使用</title>
+</head>
+<body>
+
+    <div id="app">
+       <login name="taskj"></login>
+    </div>
+
+    <script src="./js/vue.js"></script>
+    <script>
+
+        let login = {
+            template:"<div><h1>欢迎：{{ name }}</h1></div>",
+            props:["name"]
+        }
+
+        const app = new Vue({
+            el: "#app",
+            data:{
+                name: "taskj"
+            },
+            methods:{},
+            components:{
+                login
+            }
+        })
+    </script>
+
+</body>
+</html>

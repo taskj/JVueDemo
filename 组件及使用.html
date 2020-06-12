@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>组件及使用</title>
+</head>
+<body>
+
+    <div id="app">
+        <user-login></user-login>
+        <login></login>
+    </div>
+    
+    <script src="./js/vue.js"></script>
+    <script>
+
+
+        //全局注册的组件最近会包含在最终的构建结果中，造成用户下载的javascript过大。
+        Vue.component('userLogin',{
+            template:"<div><h1>用户登录</h1></div>"
+        });
+
+        //局部组件
+        let login = {
+            template:"<div><h1>登录</h1></div>"
+        }
+
+        const app = new Vue({
+            el: "#app",
+            data:{},
+            methods:{},
+            components:{  //局部组件
+                login:login
+            }
+        })
+    </script>
+
+
+</body>
+</html>
