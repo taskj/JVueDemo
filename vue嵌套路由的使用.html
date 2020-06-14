@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue嵌套路由的使用</title>
+</head>
+<body>
+
+    <div id="app">
+        <router-link to="/product">商品管理</router-link>
+        <router-view></router-view>
+    </div>
+    <template id="product">
+        <div>
+            <h1>商品管理</h1>
+            <router-link to="/product/add">商品添加</router-link>
+            <router-link to="/product/edit">商品编辑</router-link>
+            <router-view></router-view>
+        </div>
+    </template>
+    <script src="./js/vue.js"></script>
+    <script src="./js/vue-router.js"></script>
+    <script>
+        
+        const product = {
+            template:"#product"
+
+        };
+
+        const add = {
+            template:'<h1>商品添加</h1>',
+        };
+
+        const edit = {
+            template:'<h1>商品编辑</h1>',
+        };
+
+        const router = new VueRouter({
+            routes:[
+                {
+                    path:'/product',
+                    component:product,
+                    children:[
+                        {path:'add',component:add},
+                        {path:'edit',component:edit}
+                    ]
+                },
+            ]
+        });
+
+        const app = new Vue({
+            el: "#app",
+            data:{
+                
+            },
+            methods:{},
+            router,
+        });
+    </script>
+
+</body>
+</html>

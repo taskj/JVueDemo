@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>路由传递参数的两种方式</title>
+</head>
+<body>
+
+    <div id="app">
+        <!--登陆和注册分别用了两种方法来传递参数-->
+        <router-link to="/login?id=21&name=taskj">我要登陆</router-link>
+        <router-link to="/register/88/taskj">我要注册</router-link>
+
+        <!--路由-->
+       <router-view></router-view>
+    </div>
+
+    <script src="./js/vue.js"></script>
+    <script src="./js/vue-router.js"></script>
+    <script>
+        const login = {
+            template:'<h1>用户登陆 {{ this.$route.query.id }} {{ this.$route.query.name }}</h1>',
+            data(){
+                return{}
+            },
+            methods:{},
+            created(){}
+        };
+
+        const register = {
+            template:'<h1>注册 {{this.$route.params.id}} {{this.$route.params.name}}</h1>',
+            data(){
+                return{}
+            },
+            methods:{},
+            created(){}
+        };
+
+        const router = new VueRouter({
+            routes:[
+                {path:'/',redirect:'/login'}, //redirec用来访问的是默认路由
+                {path:'/login',component:login},
+                {path:'/register/:id/:name',component:register}
+            ]
+        });
+
+        const app = new Vue({
+            el: "#app",
+            data:{},
+            methods:{},
+            router:router
+        });
+    </script>
+
+</body>
+</html>

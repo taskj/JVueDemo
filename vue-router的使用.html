@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue-router的使用</title>
+</head>
+<body>
+
+    <div id="app">
+        <a href="#/login">登陆</a>
+        <a href="#/register">注册</a>
+
+
+        <router-link to="/login">我要登陆</router-link>
+        <router-link to="/register">我要注册</router-link>
+
+        <!--路由-->
+       <router-view></router-view>
+    </div>
+
+    <script src="./js/vue.js"></script>
+    <script src="./js/vue-router.js"></script>
+    <script>
+        const login = {
+            template:'<h1>登陆</h1>'
+        };
+
+        const register = {
+            template:'<h1>注册</h1>'
+        };
+
+        const router = new VueRouter({
+            routes:[
+                {path:'/',redirect:'/login'}, //redirec用来访问的是默认路由
+                {path:'/login',component:login},
+                {path:'/register',component:register}
+            ]
+
+        })
+
+        const app = new Vue({
+            el: "#app",
+            data:{
+                
+            },
+            methods:{},
+            router:router
+        })
+    </script>
+
+</body>
+</html>
