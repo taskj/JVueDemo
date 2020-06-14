@@ -3,31 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>vue组件prop属性使用</title>
+    <title>实例-请假申请单</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<style>
+#submitform {width:50%;margin:auto;padding:30px;border:1px solid #ccc;}
+#formtitle {text-align: center;font-weight: bold;}
+</style>
 </head>
 <body>
 
     <div id="app">
-       <login name="taskj"></login>
+        <h2 id="formtitle">请假申请单</h2>
+        <div id="submitform">
+        <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+            <el-row>
+                <el-col :span="12">
+                    <el-form-item label="申请部门">
+                        <el-input v-model="form.applydept"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="申请人" prop="applyman">
+                        <el-input v-model="form.applyman"></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+        </el-form>
+        </div>
     </div>
 
     <script src="./js/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     <script>
-
-        let login = {
-            template:"<div><h1>欢迎：{{ name }}</h1></div>",
-            props:["name"]
-        }
-
         const app = new Vue({
             el: "#app",
             data:{
-                name: "taskj"
+                form: {
+                    applydept:'',
+                    applyman:''
+                },
+                rules:{
+                    applyman: [
+                        {required:true,message:"请输入申请人名字",trigger:'blur'}
+                    ]
+                }
             },
-            methods:{},
-            components:{
-                login
-            }
+            methods:{}
+            
         })
     </script>
 
