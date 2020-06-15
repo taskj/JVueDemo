@@ -6,16 +6,17 @@
     <title>实例-请假申请单</title>
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 <style>
-#submitform {width:50%;margin:auto;padding:30px;border:1px solid #ccc;}
-#formtitle {text-align: center;font-weight: bold;}
+#submitform {width:700px;margin:auto;padding:10px;border:1px solid #ebebeb;}
+#formtitle {text-align: center;}
 </style>
 </head>
 <body>
 
     <div id="app">
-        <h2 id="formtitle">请假申请单</h2>
+        
         <div id="submitform">
-        <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <h2 id="formtitle">请假申请单</h2>
+        <el-form ref="form" :model="form" :rules="rules" label-width="125px" size="mini">
             <el-row>
                 <el-col :span="12">
                     <el-form-item label="申请部门">
@@ -28,28 +29,169 @@
                     </el-form-item>
                 </el-col>
             </el-row>
+            <el-row>
+                <el-col :span="12">
+                    <el-form-item label="申请日期">
+                        <el-input v-model="form.applydate"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="岗位" prop="station">
+                        <el-input v-model="form.station"></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="24">
+                    <!-- <el-form-item label="假期类型" prop="vacationtype">
+                        <el-radio v-model="form.vacationtype" label="年休假">年休假</el-radio>
+                        <el-radio v-model="form.vacationtype" label="婚假">婚假</el-radio>
+                        <el-radio v-model="form.vacationtype" label="病假">病假</el-radio>
+                        <el-radio v-model="form.vacationtype" label="工伤假">工伤假</el-radio>
+                        <el-radio v-model="form.vacationtype" label="补休假">补休假</el-radio>
+                        <el-radio v-model="form.vacationtype" label="产假">产假</el-radio>
+                        <el-radio v-model="form.vacationtype" label="丧假">丧假</el-radio>
+                        <el-radio v-model="form.vacationtype" label="探亲假">探亲假</el-radio>
+                        <el-radio v-model="form.vacationtype" label="事假">事假</el-radio>
+                        <el-radio v-model="form.vacationtype" label="陪产假">陪产假</el-radio>
+                        <el-radio v-model="form.vacationtype" label="计划生育假">计划生育假</el-radio>
+                    </el-form-item> -->
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="24">
+                    <el-form-item label="请假时间" required>
+                        <el-col :span="11">
+                            <el-form-item prop="starttime">
+                                <el-date-picker type="date" placeholder="开始日期" v-model="form.starttime" style="width: 100%;"></el-date-picker>
+                            </el-form-item> 
+                        </el-col>
+                        <el-col :span="1" style="text-align:center;">至</el-col>
+                        <el-col :span="11">
+                            <el-form-item prop="endtime">
+                                <el-date-picker type="date" placeholder="结束日期" v-model="form.endtime" style="width: 100%;"></el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="12">
+                    <el-form-item label="请假天数" prop="leavedays">
+                        <el-input v-model="form.leavedays"></el-input>
+                    </el-form-item> 
+                </el-col>     
+            </el-row>
+            <el-row>
+                <el-col :span="12">
+                    <el-form-item label="年休假总天数" prop="nxjzts">
+                        <el-input v-model="form.nxjzts"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="剩余年休假天数" prop="synxjts">
+                        <el-input v-model="form.synxjts"></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="24">
+                    <el-form-item label="休假事由" prop="xjsy">
+                        <el-input v-model="form.xjsy"></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="24">
+                    <el-form-item label="休假去向及联系方式" prop="xjqxjlxfs">
+                        <el-input v-model="form.xjqxjlxfs"></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="12">
+                    <el-form-item label="销假时间" prop="xjsj">
+                        <el-input v-model="form.xjsj"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="实际休假天数" prop="sjxjts">
+                        <el-input v-model="form.sjxjts"></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row>
         </el-form>
         </div>
     </div>
 
     <script src="./js/vue.js"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="./js/axios.min.js"></script>
     <script>
         const app = new Vue({
             el: "#app",
             data:{
-                form: {
+                form:{
                     applydept:'',
-                    applyman:''
+                    applyman:'',
+                    applydate:'',
+                    station:'',
+                    vacationtype:'',
+                    starttime:'',
+                    endtime:'',
+                    leavedays:'',
+                    nxjzts:'',
+                    synxjts:'',
+                    xjsy:'',
+                    xjqxjlxfs:''
                 },
+                vacationtypelist:[],
                 rules:{
                     applyman: [
-                        {required:true,message:"请输入申请人名字",trigger:'blur'}
+                        {required:true,message:"申请人名字不能为空",trigger:'blur'}
+                    ],
+                    station: [
+                        {required:true,message:"岗位名称不能为空",trigger:'blur'}
+                    ],
+                    vacationtype: [
+                        {required:true,message:"休假类型不能为空",trigger:'blur'}
+                    ],
+                    starttime: [
+                        {required:true,message:"休假开始时间不能为空",trigger:'blur'}
+                    ],
+                    endtime: [
+                        {required:true,message:"休假结束时间不能为空",trigger:'blur'}
+                    ],
+                    leavedays: [
+                        {required:true,message:"请假天数不能为空",trigger:'blur'}
+                    ],
+                    nxjzts: [
+                        {required:true,message:"年休假总天数不能为空",trigger:'blur'}
+                    ],
+                    synxjts: [
+                        {required:true,message:"剩余年休假天数不能为空",trigger:'blur'}
+                    ],
+                    xjsy: [
+                        {required:true,message:"休假事由不能为空",trigger:'blur'}
+                    ],
+                    xjqxjlxfs: [
+                        {required:true,message:"休假事由不能为空",trigger:'blur'}
                     ]
                 }
             },
-            methods:{}
-            
+            methods:{
+                getLeaveType(){
+                    var _this = this;
+                    axios.post("http://rap2.taobao.org:38080/app/mock/257937/leave/gettype").then(function(res){
+                        for(var i=0;i<res.data.leavetypes.length;i++){
+                            _this.vacationtypelist.push(res.data.leavetypes[i]);
+                        }
+                    });
+                }
+            },
+            created(){
+                this.getLeaveType();
+            }
         })
     </script>
 
