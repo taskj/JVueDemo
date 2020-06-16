@@ -20,19 +20,19 @@
             <el-row>
                 <el-col :span="12">
                     <el-form-item label="申请部门">
-                        <el-input v-model="form.applydept"></el-input>
+                        <el-input v-model="form.applydept" disabled></el-input>
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
                     <el-form-item label="申请人" prop="applyman">
-                        <el-input v-model="form.applyman"></el-input>
+                        <el-input v-model="form.applyman" disabled></el-input>
                     </el-form-item>
                 </el-col>
             </el-row>
             <el-row>
                 <el-col :span="12">
                     <el-form-item label="申请日期">
-                        <el-input v-model="form.applydate"></el-input>
+                        <el-input v-model="form.applydate" disabled></el-input>
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
@@ -43,19 +43,11 @@
             </el-row>
             <el-row>
                 <el-col :span="24">
-                    <!-- <el-form-item label="假期类型" prop="vacationtype">
-                        <el-radio v-model="form.vacationtype" label="年休假">年休假</el-radio>
-                        <el-radio v-model="form.vacationtype" label="婚假">婚假</el-radio>
-                        <el-radio v-model="form.vacationtype" label="病假">病假</el-radio>
-                        <el-radio v-model="form.vacationtype" label="工伤假">工伤假</el-radio>
-                        <el-radio v-model="form.vacationtype" label="补休假">补休假</el-radio>
-                        <el-radio v-model="form.vacationtype" label="产假">产假</el-radio>
-                        <el-radio v-model="form.vacationtype" label="丧假">丧假</el-radio>
-                        <el-radio v-model="form.vacationtype" label="探亲假">探亲假</el-radio>
-                        <el-radio v-model="form.vacationtype" label="事假">事假</el-radio>
-                        <el-radio v-model="form.vacationtype" label="陪产假">陪产假</el-radio>
-                        <el-radio v-model="form.vacationtype" label="计划生育假">计划生育假</el-radio>
-                    </el-form-item> -->
+                    <el-form-item label="假期类型">
+                        <el-radio-group v-model="form.vacationtype">
+                            <el-radio :label="list" :key="index" v-for="(list,index) in vacationtypelist">{{list}}</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
                 </el-col>
             </el-row>
             <el-row>
@@ -78,19 +70,19 @@
             <el-row>
                 <el-col :span="12">
                     <el-form-item label="请假天数" prop="leavedays">
-                        <el-input v-model="form.leavedays"></el-input>
+                        <el-input v-model="form.leavedays" disabled></el-input>
                     </el-form-item> 
                 </el-col>     
             </el-row>
             <el-row>
                 <el-col :span="12">
                     <el-form-item label="年休假总天数" prop="nxjzts">
-                        <el-input v-model="form.nxjzts"></el-input>
+                        <el-input v-model="form.nxjzts" disabled></el-input>
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
                     <el-form-item label="剩余年休假天数" prop="synxjts">
-                        <el-input v-model="form.synxjts"></el-input>
+                        <el-input v-model="form.synxjts" disabled></el-input>
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -110,9 +102,9 @@
             </el-row>
             <el-row>
                 <el-col :span="12">
-                    <el-form-item label="销假时间" prop="xjsj">
-                        <el-input v-model="form.xjsj"></el-input>
-                    </el-form-item>
+                    <el-form-item label="销假时间">
+                        <el-date-picker type="date" placeholder="销假时间" v-model="form.xjsj" style="width: 100%;"></el-date-picker>
+                    </el-form-item> 
                 </el-col>
                 <el-col :span="12">
                     <el-form-item label="实际休假天数" prop="sjxjts">
@@ -136,7 +128,7 @@
                     applyman:'',
                     applydate:'',
                     station:'',
-                    vacationtype:'',
+                    vacationtype:'年休假',
                     starttime:'',
                     endtime:'',
                     leavedays:'',
@@ -176,7 +168,11 @@
                     ],
                     xjqxjlxfs: [
                         {required:true,message:"休假事由不能为空",trigger:'blur'}
+                    ],
+                    xjqxjlxfs:[
+                        {required:true,message:"休假去向及联系方式不能为空",trigger:'blur'}
                     ]
+
                 }
             },
             methods:{
@@ -187,10 +183,40 @@
                             _this.vacationtypelist.push(res.data.leavetypes[i]);
                         }
                     });
-                }
+                },
+                diffTime(starttime,endtime){
+                    if(starttime !="" & starttime !=null & endtime !="" & endtime !=null){
+                        var stime = starttime.getTime();
+                        var etime = endtime.getTime();
+                        var diffTime = etime - stime;
+                        if(diffTime<0){
+                            this.$notify.error({
+                                title: '日期输入错误！',
+                                message: '请确保结束日期不早于开始日期'
+                            });
+                            this.form.starttime = "";
+                            this.form.endtime = "";
+                        }else{
+                            this.form.leavedays = (diffTime/3600/24/1000) + 1;
+                        }
+                    }
+                },
+                getNowDate(){
+                    var date = new Date();
+                    this.form.applydate = date.getTime();
+                }        
             },
             created(){
-                this.getLeaveType();
+                this.getLeaveType(); //从api接口获取休假类型
+                this.getNowDate(); //获取当前日期
+            },
+            watch:{
+                'form':{
+                    handler(val){
+                       this.diffTime(val.starttime,val.endtime);
+                    },
+                    deep:true
+                }
             }
         })
     </script>
