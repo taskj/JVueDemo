@@ -6,7 +6,8 @@
     <title>实例-请假申请单</title>
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 <style>
-#submitform {width:700px;margin:auto;padding:10px;border:1px solid #ebebeb;}
+body {background:#ccc;}
+#submitform {width:700px;margin:auto;padding:10px;box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);background:white;}
 #formtitle {text-align: center;}
 </style>
 </head>
@@ -18,33 +19,34 @@
         <h2 id="formtitle">请假申请单</h2>
         <el-form ref="form" :model="form" :rules="rules" label-width="125px" size="mini">
             <el-row>
-                <el-col :span="12">
+                <el-col :span="11">
                     <el-form-item label="申请部门">
                         <el-input v-model="form.applydept" disabled></el-input>
                     </el-form-item>
+                    
                 </el-col>
-                <el-col :span="12">
+                <el-col :span="11">
                     <el-form-item label="申请人" prop="applyman">
                         <el-input v-model="form.applyman" disabled></el-input>
                     </el-form-item>
                 </el-col>
             </el-row>
             <el-row>
-                <el-col :span="12">
+                <el-col :span="11">
                     <el-form-item label="申请日期">
                         <el-input v-model="form.applydate" disabled></el-input>
                     </el-form-item>
                 </el-col>
-                <el-col :span="12">
+                <el-col :span="11">
                     <el-form-item label="岗位" prop="station">
                         <el-input v-model="form.station"></el-input>
                     </el-form-item>
                 </el-col>
             </el-row>
             <el-row>
-                <el-col :span="24">
+                <el-col :span="22">
                     <el-form-item label="假期类型">
-                        <el-radio-group v-model="form.vacationtype">
+                        <el-radio-group v-model="form.vacationtype"></el-radio-group>
                             <el-radio :label="list" :key="index" v-for="(list,index) in vacationtypelist">{{list}}</el-radio>
                         </el-radio-group>
                     </el-form-item>
@@ -52,73 +54,80 @@
             </el-row>
             <el-row>
                 <el-col :span="24">
-                    <el-form-item label="请假时间" required>
-                        <el-col :span="11">
-                            <el-form-item prop="starttime">
-                                <el-date-picker type="date" placeholder="开始日期" v-model="form.starttime" style="width: 100%;"></el-date-picker>
-                            </el-form-item> 
-                        </el-col>
-                        <el-col :span="1" style="text-align:center;">至</el-col>
-                        <el-col :span="11">
-                            <el-form-item prop="endtime">
-                                <el-date-picker type="date" placeholder="结束日期" v-model="form.endtime" style="width: 100%;"></el-date-picker>
-                            </el-form-item>
-                        </el-col>
+                    <el-form-item label="请假时间" prop="timebox">
+                        <el-date-picker v-model="timebox" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="timestamp">
+                        </el-date-picker>
                     </el-form-item>
                 </el-col>
             </el-row>
             <el-row>
-                <el-col :span="12">
+                <el-col :span="11">
                     <el-form-item label="请假天数" prop="leavedays">
                         <el-input v-model="form.leavedays" disabled></el-input>
                     </el-form-item> 
                 </el-col>     
             </el-row>
             <el-row>
-                <el-col :span="12">
+                <el-col :span="11">
                     <el-form-item label="年休假总天数" prop="nxjzts">
                         <el-input v-model="form.nxjzts" disabled></el-input>
                     </el-form-item>
                 </el-col>
-                <el-col :span="12">
+                <el-col :span="11">
                     <el-form-item label="剩余年休假天数" prop="synxjts">
                         <el-input v-model="form.synxjts" disabled></el-input>
                     </el-form-item>
                 </el-col>
             </el-row>
             <el-row>
-                <el-col :span="24">
+                <el-col :span="22">
                     <el-form-item label="休假事由" prop="xjsy">
                         <el-input v-model="form.xjsy"></el-input>
                     </el-form-item>
                 </el-col>
             </el-row>
             <el-row>
-                <el-col :span="24">
+                <el-col :span="22">
                     <el-form-item label="休假去向及联系方式" prop="xjqxjlxfs">
                         <el-input v-model="form.xjqxjlxfs"></el-input>
                     </el-form-item>
                 </el-col>
             </el-row>
             <el-row>
-                <el-col :span="12">
+                <el-col :span="11">
                     <el-form-item label="销假时间">
                         <el-date-picker type="date" placeholder="销假时间" v-model="form.xjsj" style="width: 100%;"></el-date-picker>
                     </el-form-item> 
                 </el-col>
-                <el-col :span="12">
+                <el-col :span="11">
                     <el-form-item label="实际休假天数" prop="sjxjts">
                         <el-input v-model="form.sjxjts"></el-input>
                     </el-form-item>
                 </el-col>
             </el-row>
+            <el-row>
+                <el-col :span="22">
+                    <el-form-item label="备注">
+                        <el-input type="textarea" v-model="form.beizhu"></el-input>
+                    </el-form-item> 
+                </el-col>
+            </el-row>
         </el-form>
+        <el-table :data="tableData" border style="width: 100%">
+            <el-table-column type="index" label="序号"></el-table-column>
+            <el-table-column prop="qjlx" label="请假类型"></el-table-column>
+            <el-table-column prop="qjsj" label="请假时间"></el-table-column>
+            <el-table-column prop="qjts" label="请假天数"></el-table-column>
+            <el-table-column prop="spzt" label="审批状态"></el-table-column>
+            <el-table-column prop="sjxjts" label="实际休假天数"></el-table-column>
+        </el-table>
         </div>
     </div>
 
     <script src="./js/vue.js"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     <script src="./js/axios.min.js"></script>
+    <script src="./js/commom.js"></script>
     <script>
         const app = new Vue({
             el: "#app",
@@ -135,8 +144,10 @@
                     nxjzts:'',
                     synxjts:'',
                     xjsy:'',
-                    xjqxjlxfs:''
+                    xjqxjlxfs:'',
                 },
+                timebox:'',
+                tableData: [],
                 vacationtypelist:[],
                 rules:{
                     applyman: [
@@ -171,18 +182,24 @@
                     ],
                     xjqxjlxfs:[
                         {required:true,message:"休假去向及联系方式不能为空",trigger:'blur'}
+                    ],
+                    timebox:[
+                        {required:true,message:"请假时间不能为空",trigger:'blur'}
                     ]
-
                 }
             },
             methods:{
                 getLeaveType(){
-                    var _this = this;
-                    axios.post("http://rap2.taobao.org:38080/app/mock/257937/leave/gettype").then(function(res){
+                    axios.post("http://rap2.taobao.org:38080/app/mock/257937/leave/gettype").then((res)=>{
                         for(var i=0;i<res.data.leavetypes.length;i++){
-                            _this.vacationtypelist.push(res.data.leavetypes[i]);
+                            this.vacationtypelist.push(res.data.leavetypes[i]);      
                         }
                     });
+                },
+                getNjRecords(){
+                    axios.post("http://rap2.taobao.org:38080/app/mock/257937/leave/getnjrecords").then((res)=>{
+                        this.tableData = res.data.njrecords;
+                    });  
                 },
                 diffTime(starttime,endtime){
                     if(starttime !="" & starttime !=null & endtime !="" & endtime !=null){
@@ -190,10 +207,7 @@
                         var etime = endtime.getTime();
                         var diffTime = etime - stime;
                         if(diffTime<0){
-                            this.$notify.error({
-                                title: '日期输入错误！',
-                                message: '请确保结束日期不早于开始日期'
-                            });
+                            this.errorNoti("日期输入错误！","请确保结束日期不早于开始日期")
                             this.form.starttime = "";
                             this.form.endtime = "";
                         }else{
@@ -204,21 +218,34 @@
                 getNowDate(){
                     var date = new Date();
                     this.form.applydate = date.getTime();
+                },
+                errorNoti(title,message){
+                    this.$notify.error({
+                        title: title,
+                        message: message
+                    });
                 }        
             },
             created(){
                 this.getLeaveType(); //从api接口获取休假类型
                 this.getNowDate(); //获取当前日期
+                this.getNjRecords() //获取年假记录
             },
             watch:{
                 'form':{
                     handler(val){
-                       this.diffTime(val.starttime,val.endtime);
+                       this.diffTime();
                     },
                     deep:true
                 }
+            },
+            computed:{
+                form_starttime:function(){
+                    return this.timebox[0];
+                }
+
             }
-        })
+        });
     </script>
 
 </body>
