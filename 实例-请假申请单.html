@@ -21,20 +21,20 @@ body {background:#ccc;}
             <el-row>
                 <el-col :span="11">
                     <el-form-item label="申请部门">
-                        <el-input v-model="form.applydept" disabled></el-input>
-                    </el-form-item>
-                    
+                        <el-input v-model="form.applydept"></el-input>
+                    </el-form-item>  
                 </el-col>
                 <el-col :span="11">
                     <el-form-item label="申请人" prop="applyman">
-                        <el-input v-model="form.applyman" disabled></el-input>
+                        <el-input v-model="form.applyman"></el-input>
                     </el-form-item>
                 </el-col>
             </el-row>
             <el-row>
                 <el-col :span="11">
                     <el-form-item label="申请日期">
-                        <el-input v-model="form.applydate" disabled></el-input>
+                        <el-date-picker v-model="form.applydate" disabled type="date" placeholder="申请日期的">
+                        </el-date-picker>
                     </el-form-item>
                 </el-col>
                 <el-col :span="11">
@@ -47,14 +47,14 @@ body {background:#ccc;}
                 <el-col :span="22">
                     <el-form-item label="假期类型">
                         <el-radio-group v-model="form.vacationtype"></el-radio-group>
-                            <el-radio :label="list" :key="index" v-for="(list,index) in vacationtypelist">{{list}}</el-radio>
+                            <el-radio v-model= "form.vacationtype" :label="list" :key="index" v-for="(list,index) in vacationtypelist">{{list}}</el-radio>
                         </el-radio-group>
                     </el-form-item>
                 </el-col>
             </el-row>
             <el-row>
                 <el-col :span="24">
-                    <el-form-item label="请假时间" prop="timebox">
+                    <el-form-item label="请假时间">
                         <el-date-picker v-model="timebox" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="timestamp">
                         </el-date-picker>
                     </el-form-item>
@@ -127,8 +127,9 @@ body {background:#ccc;}
     <script src="./js/vue.js"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     <script src="./js/axios.min.js"></script>
-    <script src="./js/commom.js"></script>
+    <script src="./js/moment.js"></script>
     <script>
+
         const app = new Vue({
             el: "#app",
             data:{
@@ -137,7 +138,7 @@ body {background:#ccc;}
                     applyman:'',
                     applydate:'',
                     station:'',
-                    vacationtype:'年休假',
+                    vacationtype:'',
                     starttime:'',
                     endtime:'',
                     leavedays:'',
@@ -182,9 +183,6 @@ body {background:#ccc;}
                     ],
                     xjqxjlxfs:[
                         {required:true,message:"休假去向及联系方式不能为空",trigger:'blur'}
-                    ],
-                    timebox:[
-                        {required:true,message:"请假时间不能为空",trigger:'blur'}
                     ]
                 }
             },
@@ -198,22 +196,16 @@ body {background:#ccc;}
                 },
                 getNjRecords(){
                     axios.post("http://rap2.taobao.org:38080/app/mock/257937/leave/getnjrecords").then((res)=>{
-                        this.tableData = res.data.njrecords;
+                        if(res.data.njrecords.length != 0 || res.data.njrecords.length != null){
+                            for(let i=0;i<res.data.njrecords.length;i++){
+                                let stime = res.data.njrecords[i]['qjsjstart'];
+                                let etime = res.data.njrecords[i]['qjsjend'];
+                                let qjsj = new moment(this.stime).format("YYYY-MM-DD") + "至" + new moment(this.etime).format("YYYY-MM-DD")
+                                res.data.njrecords[i]['qjsj'] = qjsj;
+                            }
+                            this.tableData = res.data.njrecords;
+                        }                     
                     });  
-                },
-                diffTime(starttime,endtime){
-                    if(starttime !="" & starttime !=null & endtime !="" & endtime !=null){
-                        var stime = starttime.getTime();
-                        var etime = endtime.getTime();
-                        var diffTime = etime - stime;
-                        if(diffTime<0){
-                            this.errorNoti("日期输入错误！","请确保结束日期不早于开始日期")
-                            this.form.starttime = "";
-                            this.form.endtime = "";
-                        }else{
-                            this.form.leavedays = (diffTime/3600/24/1000) + 1;
-                        }
-                    }
                 },
                 getNowDate(){
                     var date = new Date();
@@ -234,16 +226,14 @@ body {background:#ccc;}
             watch:{
                 'form':{
                     handler(val){
-                       this.diffTime();
                     },
                     deep:true
+                },
+                timebox:function(){
+                    this.form.starttime = this.timebox[0];
+                    this.form.endtime = this.timebox[1];
+                    this.form.leavedays = ((this.form.endtime - this.form.starttime) / (1000*24*3600)) + 1;
                 }
-            },
-            computed:{
-                form_starttime:function(){
-                    return this.timebox[0];
-                }
-
             }
         });
     </script>
