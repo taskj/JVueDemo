@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 <style>
 body {background:#ccc;}
-#submitform {width:1200px;margin:auto;padding:10px;box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);background:white;}
+#submitform {width:1300px;margin:auto;padding:10px;box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);background:white;}
 #formtitle {text-align: center;}
 </style>
 </head>
@@ -38,7 +38,8 @@ body {background:#ccc;}
                 </el-row>
                 <el-row>
                     <el-col :span="24">
-                        <el-table :data="form.tableData" style="width: 100%" height="250">
+                        <el-table :data="form.tableData" style="width: 100%;height:auto;" ref="tableData">
+                            <el-table-column type="selection" fixed width="50"></el-table-column>
                             <el-table-column type="index" fixed label="序号" width="50"></el-table-column>
                             <el-table-column prop="date" label="日期" width="100"></el-table-column>
                             <el-table-column prop="zddx" label="招待对象" width="100"></el-table-column>
@@ -50,20 +51,109 @@ body {background:#ccc;}
                             <el-table-column prop="hdnr" label="活动内容" width="100"></el-table-column>
                             <el-table-column prop="yt" label="用途" width="100"></el-table-column>
                             <el-table-column prop="bz" label="备注" width="100"></el-table-column>
-                            <el-table-column fixed="right" label="操作" width="100">
+                            <el-table-column fixed="right" label="操作" width="200">
                                 <template v-slot="scope">
-                                    <el-button @click="handleClick(scope)" type="text" size="small">查看</el-button>
-                                    <el-button type="text" size="small">编辑</el-button>
-                                    <el-button type="text" size="small">删除</el-button>
+                                    <el-button-group>
+                                        <el-button type="primary" @click="upSort(scope)" icon="el-icon-top" size="mini"></el-button>
+                                        <el-button type="danger" @click="downSort(scope)" icon="el-icon-bottom" size="mini"></el-button>
+                                        <el-button type="warning" @click="topSort(scope)" icon="el-icon-arrow-up" size="mini"></el-button>
+                                    </el-button-group>
                                 </template>
                             </el-table-column>
                         </el-table>
                     </el-col>
                 </el-row>
-
+                <el-row style="margin-top:20px;">
+                    <el-col :span="24">
+                        <el-button size="mini" type="danger">删除</el-button>
+                        <el-button size="mini" type="primary" @click="hfdataFormVisible = true">增加</el-button>
+                    </el-col>
+                </el-row>
+                <el-row style="margin-top:20px;">
+                    <el-col :span="11">
+                        <el-form-item label="合计">
+                            <el-input v-model="form.hj" disabled></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
             </el-form>
-            
         </div>
+
+        <!--动态表格输入表单-->
+        <el-dialog title="新增招待项目" :visible.sync="hfdataFormVisible">
+            <el-form :model="hfdata" size="mini" :rules="hfdata_rules" ref="hfdataForm">
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="日期" :label-width="formLabelWidth" prop="date">
+                            <el-date-picker v-model="hfdata.date" type="date" placeholder="选择日期" format="yyyy-MM-dd" value-format="yyyy-MM-dd"></el-date-picker>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="招待对象" :label-width="formLabelWidth" prop="zddx">
+                            <el-input v-model="hfdata.zddx"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="用餐类型" :label-width="formLabelWidth" prop="yclx">
+                            <el-select v-model="hfdata.yclx" placeholder="请选择">
+                                <el-option v-for="item in yclxList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="人数" :label-width="formLabelWidth" prop="rs">
+                            <el-input v-model="hfdata.rs"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="陪同人数" :label-width="formLabelWidth" prop="ptrs">
+                            <el-input v-model="hfdata.ptrs"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="标准/人/次" :label-width="formLabelWidth" prop="bzrc">
+                            <el-input v-model="hfdata.bzrc"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="费用总额" :label-width="formLabelWidth" prop="fyze">
+                            <el-input v-model="hfdata.fyze" oninput="value=value.replace(/[^\d.]/g,'')"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="活动内容" :label-width="formLabelWidth" prop="hdnr">
+                            <el-input v-model="hfdata.hdnr"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="用途" :label-width="formLabelWidth" prop="yt">
+                            <el-input v-model="hfdata.yt"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="备注" :label-width="formLabelWidth" prop="bz">
+                            <el-input v-model="hfdata.bz"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="warning" @click="clearHfdata()">重置</el-button>
+                <el-button @click="hfdataFormVisible = false">取 消</el-button>
+                <el-button type="primary" @click="addHfData()">确 定</el-button>
+            </div>
+        </el-dialog>
+        <!--动态表格输入表单-->
+
+
     </div>
 
     <script src="./js/vue.js"></script>
@@ -78,23 +168,120 @@ body {background:#ccc;}
                     applyman:'',
                     applydw:'',
                     applydate:'',
-                    tableData: [{
-                        date: '2016-05-02',
-                        zddx: '领导',
-                        yclx: '工作餐',
-                        rs:12,
-                        ptrs:5,
-                        bzrc:100,
-                        fyze:10000,
-                        hdnr:'考察',
-                        yt:'调研',
-                        bz:'科研调查'
-                    }]
-                }
+                    tableData: [],
+                    hj:''
+                },
+                rules:{},
+                hfdata_rules:{
+                    date:[{required: true, message: '必填', trigger: 'blur'}],
+                    zddx:[{required: true, message: '必填', trigger: 'blur'}]
+                },
+                hfdata:{
+                    date:'',
+                    zddx:'',
+                    yclx:'',
+                    rs:'',
+                    ptrs:'',
+                    bzrc:'',
+                    fyze:'',
+                    hdnr:'',
+                    yt:'',
+                    bz:''
+                },
+                hfdataFormVisible: false,
+                formLabelWidth:'120px',
+                yclxList:[{
+                    value: '工作餐',
+                    label: '工作餐'
+                }, {
+                    value: '招待餐',
+                    label: '招待餐'
+                }]
+            },
+            mounted(){
+                this.getTableDate();
+                this.getTotal();
+                console.log(this.$refs.tableData.selection);
             },
             methods:{
-                handleClick(scope){
-                    console.log(scope.row);
+                getTableDate(){
+                    axios.post("http://rap2.taobao.org:38080/app/mock/257937/tabledata/get").then((res)=>{
+                        this.form.tableData = res.data.tableData;
+                    });
+                },
+                addHfData(){
+                    this.$refs['hfdataForm'].validate((valid)=>{
+                        if(valid){
+                            this.$notify({
+                                title: '成功',
+                                message: '动态数据添加成功',
+                                type: 'success'
+                            });
+                            this.hfdataFormVisible = true;
+                            this.form.tableData.push(this.hfdata);
+                        }else{
+                            this.$notify.error({
+                                title: '失败',
+                                message: '动态数据添加失败',
+                            });
+                        }
+                        this.clearHfdata();
+                    });
+                },
+                getTotal(){
+                    let itemCount = this.form.tableData.length;
+                    let itemList = this.form.tableData;
+                    let total = 0;
+                    if(itemCount != 0){
+                        for(let i=0;i<itemCount;i++){
+                            total = total + parseInt(itemList[i]['fyze']);
+                        }
+                    }
+                    this.form.hj = total.toFixed(2);
+                },
+                clearHfdata(){
+                    this.hfdata = {};
+                },
+                upSort(scope){
+                    let hfdataLength = this.form.tableData.length;
+                    let index = scope.$index;
+                    if(index!=0){
+                        this.form.tableData[index] = this.form.tableData.splice(index-1,1,this.form.tableData[index])[0];
+                    }else{
+                        this.$notify.error({
+                            title: '失败',
+                            message: '已到顶部，不能升序',
+                        });
+                    }
+                },
+                downSort(scope){
+                    let hfdataLength = this.form.tableData.length;
+                    let index = scope.$index;
+                    if(index!=(hfdataLength-1)){
+                        this.form.tableData[index] = this.form.tableData.splice(index+1,1,this.form.tableData[index])[0];
+                    }else{
+                        this.$notify.error({
+                            title: '失败',
+                            message: '已到底部，不能降序',
+                        });
+                    }
+                },
+                topSort(scope){
+                    let hfdataLength = this.form.tableData.length;
+                    let index = scope.$index;
+                    if(index == 0){
+                        this.$notify.error({
+                            title: '失败',
+                            message: '已到顶部，不能置顶',
+                        });
+                    }else{
+                        this.form.tableData[index] = this.form.tableData.splice(0,1,this.form.tableData[index])[0];
+                    }
+                }
+            },
+            watch:{
+                'form.tableData':function(){
+                    this.getTotal();
                 }
             }
         });
