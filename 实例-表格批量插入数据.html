@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实例-表格批量插入数据</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<style>
+body {background:#ccc;}
+#submitform {width:1300px;margin:auto;padding:10px;box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);background:white;}
+#formtitle {text-align: center;}
+</style>
+</head>
+<body>
+
+    <div id="app">
+        <div id="submitform">
+            <h2 id="formtitle">表格批量插入数据</h2>
+            <el-row>
+                <el-col :span="24">
+                    <el-button type="primary" style="float:right;" size="mini" @click="hfdataFormVisible = true">添加</el-button>
+                </el-col>
+            </el-row>
+            <el-table :data="tableData" border style="width: 100%;margin-top:20px;" size="mini">
+                <el-table-column prop="date" label="日期" width="180"></el-table-column>
+                <el-table-column prop="name" label="姓名" width="180"></el-table-column>
+                <el-table-column prop="sex" label="性别"></el-table-column>
+                <el-table-column prop="chinese" label="语文成绩"></el-table-column>
+                <el-table-column prop="math" label="数学成绩"></el-table-column>
+                <el-table-column prop="english" label="英语成绩"></el-table-column>
+            </el-table>
+        </div>
+
+        <!--动态表格输入表单-->
+        <el-dialog title="新增表格数据" :visible.sync="hfdataFormVisible" width="90%">
+            <el-form :model="dynamicValidateForm" ref="dynamicValidateForm" class="demo-dynamic" size="mini">
+                <el-row v-for="(domain, index) in dynamicValidateForm.domains">
+                    <el-col :span="3">
+                        <label>日期</label>
+                        <el-form-item :key="domain.key" :prop="'domains.' + index + '.value'">
+                            <el-date-picker style="width:140px;" v-model="domain.date" type="date" placeholder="选择日期" format="yyyy-MM-dd" value-format="yyyy-MM-dd"></el-date-picker>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="3">
+                        <label>名字</label>
+                        <el-form-item :key="domain.key" :prop="'domains.' + index + '.value'">
+                            <el-input v-model="domain.name"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="3" style="margin-left:7px;">
+                        <label>性别</label>
+                        <el-form-item :key="domain.key" :prop="'domains.' + index + '.value'">
+                            <el-input v-model="domain.sex"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="3" style="margin-left:7px;">
+                        <label>语文成绩</label>
+                        <el-form-item :key="domain.key" :prop="'domains.' + index + '.value'">
+                            <el-input v-model="domain.chinese"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="3" style="margin-left:7px;">
+                        <label>数学成绩</label>
+                        <el-form-item :key="domain.key" :prop="'domains.' + index + '.value'">
+                            <el-input v-model="domain.math"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="3" style="margin-left:7px;">
+                        <label>英语成绩</label>
+                        <el-form-item :key="domain.key" :prop="'domains.' + index + '.value'">
+                            <el-input v-model="domain.english"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="3" style="margin-top:19px;margin-left:7px;">
+                        <el-button @click.prevent="removeDomain(domain)" type="danger" size="mini">删除</el-button>
+                    </el-col>
+                </el-row>
+                <el-form-item>
+                    <el-button type="primary" @click="submitForm('dynamicValidateForm')">提交</el-button>
+                    <el-button @click="addDomain">新增行</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+        <!--动态表格输入表单-->
+        
+    </div>
+
+    <script src="./js/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="./js/axios.min.js"></script>
+
+    <script>
+        const app = new Vue({
+            el:"#app",
+            data:{
+                tableData: [],
+                hfdataFormVisible: true,
+                formLabelWidth:'120px',
+                dynamicValidateForm: {
+                    domains: [{
+                        date: '',
+                        name: ''
+                    }]
+                }
+            },
+            mounted(){
+                axios.post("http://rap2.taobao.org:38080/app/mock/257937/bgplcrsj/gettabledata").then((res)=>{
+                    this.tableData = res.data.tableData;
+                    console.log(res.data);
+                });
+            },
+            methods:{
+                submitForm(formName) {
+                    this.$refs[formName].validate((valid) => {
+                        if(valid) {
+                            alert('submit!');
+                        }else{
+                            console.log('error submit!!');
+                            return false;
+                        }
+                    });
+                },
+                removeDomain(item) {
+                    var index = this.dynamicValidateForm.domains.indexOf(item)
+                    if (index !== -1) {
+                        this.dynamicValidateForm.domains.splice(index, 1)
+                    }
+                },
+                addDomain() {
+                    this.dynamicValidateForm.domains.push({
+                        value: '',
+                        key: Date.now()
+                    });
+                }
+            },
+            watch:{}
+        });
+    </script>
+
+</body>
+</html>

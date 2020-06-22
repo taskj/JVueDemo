@@ -38,7 +38,7 @@ body {background:#ccc;}
                 </el-row>
                 <el-row>
                     <el-col :span="24">
-                        <el-table :data="form.tableData" style="width: 100%;height:auto;" ref="tableData">
+                        <el-table :data="form.tableData" style="width: 100%;height:auto;" ref="tableData" @selection-change="handleSelectionChang">
                             <el-table-column type="selection" fixed width="50"></el-table-column>
                             <el-table-column type="index" fixed label="序号" width="50"></el-table-column>
                             <el-table-column prop="date" label="日期" width="100"></el-table-column>
@@ -65,7 +65,7 @@ body {background:#ccc;}
                 </el-row>
                 <el-row style="margin-top:20px;">
                     <el-col :span="24">
-                        <el-button size="mini" type="danger">删除</el-button>
+                        <el-button size="mini" type="danger" @click="delHfData()">删除</el-button>
                         <el-button size="mini" type="primary" @click="hfdataFormVisible = true">增加</el-button>
                     </el-col>
                 </el-row>
@@ -205,7 +205,7 @@ body {background:#ccc;}
             },
             methods:{
                 getTableDate(){
-                    axios.post("http://rap2.taobao.org:38080/app/mock/257937/tabledata/get").then((res)=>{
+                    axios.post("http://rap2.taobao.org:38080/app/mock/257937/zdfsqd/gettabledata").then((res)=>{
                         this.form.tableData = res.data.tableData;
                     });
                 },
@@ -227,6 +227,10 @@ body {background:#ccc;}
                         }
                         this.clearHfdata();
                     });
+                },
+                delHfData(){
+                    let a = this.$refs.tableData.selection;
+                    console.log(a);
                 },
                 getTotal(){
                     let itemCount = this.form.tableData.length;
@@ -277,6 +281,9 @@ body {background:#ccc;}
                     }else{
                         this.form.tableData[index] = this.form.tableData.splice(0,1,this.form.tableData[index])[0];
                     }
+                },
+                handleSelectionChang(val){
+                    console.log(val);
                 }
             },
             watch:{
