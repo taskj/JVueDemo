@@ -38,8 +38,8 @@ body {background:#ccc;}
                 </el-row>
                 <el-row>
                     <el-col :span="24">
-                        <el-table :data="form.tableData" style="width: 100%;height:auto;" ref="tableData" @selection-change="handleSelectionChang">
-                            <el-table-column type="selection" fixed width="50"></el-table-column>
+                        <el-table :data="form.tableData" style="width: 100%;height:auto;" ref="tableData" :row-class-name="tableRowClassName" @selection-change="handleSelectionChange">
+                            <el-table-column type="selection" fixed width="50" header="$index"></el-table-column>
                             <el-table-column type="index" fixed label="序号" width="50"></el-table-column>
                             <el-table-column prop="date" label="日期" width="100"></el-table-column>
                             <el-table-column prop="zddx" label="招待对象" width="100"></el-table-column>
@@ -190,6 +190,7 @@ body {background:#ccc;}
                 },
                 hfdataFormVisible: false,
                 formLabelWidth:'120px',
+                multipleSelection: [],
                 yclxList:[{
                     value: '工作餐',
                     label: '工作餐'
@@ -201,7 +202,6 @@ body {background:#ccc;}
             mounted(){
                 this.getTableDate();
                 this.getTotal();
-                console.log(this.$refs.tableData.selection);
             },
             methods:{
                 getTableDate(){
@@ -229,8 +229,29 @@ body {background:#ccc;}
                     });
                 },
                 delHfData(){
-                    let a = this.$refs.tableData.selection;
-                    console.log(a);
+                    if(this.multipleSelection.length != 0 && this.form.tableData.length !=0){
+                        var tempArr = [];
+                        var delArr = [];
+                        for(let j=0;j<this.multipleSelection.length;j++){
+                            delArr.push(this.multipleSelection[j]['index']);
+                        }
+                        for(let i=0;i<this.form.tableData.length;i++){
+                            var isPush = true;
+                            var tableIndex = this.form.tableData[i]['index'];
+                            for(let k=0;k<delArr.length;k++){
+                                if(delArr[k] == tableIndex){
+                                    isPush = false;
+                                }
+                            }
+                            if(isPush){
+                                tempArr.push(this.form.tableData[i]);
+                            }
+                        }
+                        this.form.tableData = tempArr;
+                    }else{
+                        
+                    }
+                    this.$refs.tableData.clearSelection();
                 },
                 getTotal(){
                     let itemCount = this.form.tableData.length;
@@ -282,8 +303,11 @@ body {background:#ccc;}
                         this.form.tableData[index] = this.form.tableData.splice(0,1,this.form.tableData[index])[0];
                     }
                 },
-                handleSelectionChang(val){
-                    console.log(val);
+                handleSelectionChange(val) {
+                    this.multipleSelection = val;  
+                },
+                tableRowClassName(row) {
+                    row.row.index = row.rowIndex;
                 }
             },
             watch:{
