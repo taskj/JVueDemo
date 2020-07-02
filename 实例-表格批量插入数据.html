@@ -34,50 +34,50 @@ body {background:#ccc;}
         <!--动态表格输入表单-->
         <el-dialog title="新增表格数据" :visible.sync="hfdataFormVisible" width="90%">
             <el-form :model="dynamicValidateForm" ref="dynamicValidateForm" class="demo-dynamic" size="mini">
-                <el-row v-for="(domain, index) in dynamicValidateForm.domains">
+                <el-row v-for="(item, index) in dynamicValidateForm.items">
                     <el-col :span="3">
                         <label>日期</label>
-                        <el-form-item :key="domain.key" :prop="'domains.' + index + '.value'">
-                            <el-date-picker style="width:140px;" v-model="domain.date" type="date" placeholder="选择日期" format="yyyy-MM-dd" value-format="yyyy-MM-dd"></el-date-picker>
+                        <el-form-item :key="item.key" :prop="'items.' + index + '.value'">
+                            <el-date-picker style="width:140px;" v-model="item.date" type="date" placeholder="选择日期" format="yyyy-MM-dd" value-format="yyyy-MM-dd"></el-date-picker>
                         </el-form-item>
                     </el-col>
                     <el-col :span="3">
                         <label>名字</label>
-                        <el-form-item :key="domain.key" :prop="'domains.' + index + '.value'">
-                            <el-input v-model="domain.name"></el-input>
+                        <el-form-item :key="item.key" :prop="'items.' + index + '.value'">
+                            <el-input v-model="item.name"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="3" style="margin-left:7px;">
                         <label>性别</label>
-                        <el-form-item :key="domain.key" :prop="'domains.' + index + '.value'">
-                            <el-input v-model="domain.sex"></el-input>
+                        <el-form-item :key="item.key" :prop="'items.' + index + '.value'">
+                            <el-input v-model="item.sex"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="3" style="margin-left:7px;">
                         <label>语文成绩</label>
-                        <el-form-item :key="domain.key" :prop="'domains.' + index + '.value'">
-                            <el-input v-model="domain.chinese"></el-input>
+                        <el-form-item :key="item.key" :prop="'items.' + index + '.value'">
+                            <el-input v-model="item.chinese"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="3" style="margin-left:7px;">
                         <label>数学成绩</label>
-                        <el-form-item :key="domain.key" :prop="'domains.' + index + '.value'">
-                            <el-input v-model="domain.math"></el-input>
+                        <el-form-item :key="item.key" :prop="'items.' + index + '.value'">
+                            <el-input v-model="item.math"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="3" style="margin-left:7px;">
                         <label>英语成绩</label>
-                        <el-form-item :key="domain.key" :prop="'domains.' + index + '.value'">
-                            <el-input v-model="domain.english"></el-input>
+                        <el-form-item :key="item.key" :prop="'items.' + index + '.value'">
+                            <el-input v-model="item.english"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="3" style="margin-top:19px;margin-left:7px;">
-                        <el-button @click.prevent="removeDomain(domain)" type="danger" size="mini">删除</el-button>
+                        <el-button @click.prevent="removeitem(item)" type="danger" size="mini">删除</el-button>
                     </el-col>
                 </el-row>
                 <el-form-item>
                     <el-button type="primary" @click="submitForm('dynamicValidateForm')">提交</el-button>
-                    <el-button @click="addDomain">新增行</el-button>
+                    <el-button @click="addItem">新增行</el-button>
                 </el-form-item>
             </el-form>
         </el-dialog>
@@ -97,7 +97,7 @@ body {background:#ccc;}
                 hfdataFormVisible: true,
                 formLabelWidth:'120px',
                 dynamicValidateForm: {
-                    domains: [{
+                    items: [{
                         date: '',
                         name: ''
                     }]
@@ -106,28 +106,38 @@ body {background:#ccc;}
             mounted(){
                 axios.post("http://rap2.taobao.org:38080/app/mock/257937/bgplcrsj/gettabledata").then((res)=>{
                     this.tableData = res.data.tableData;
-                    console.log(res.data);
                 });
             },
             methods:{
                 submitForm(formName) {
                     this.$refs[formName].validate((valid) => {
                         if(valid) {
-                            alert('submit!');
+                            if(this.dynamicValidateForm.items.length != 0){
+                                for(let i=0;i<this.dynamicValidateForm.items.length;i++){
+                                    this.tableData.push(this.dynamicValidateForm.items[i]);
+                                }
+                                this.$notify({
+                                    title: '成功',
+                                    message: '动态数据添加成功',
+                                    type: 'success'
+                                });
+                                this.hfdataFormVisible = false;
+                                this.dynamicValidateForm.items = [{data:'',name:'' }];  
+                            }
                         }else{
                             console.log('error submit!!');
                             return false;
                         }
                     });
                 },
-                removeDomain(item) {
-                    var index = this.dynamicValidateForm.domains.indexOf(item)
+                removeitem(item) {
+                    var index = this.dynamicValidateForm.items.indexOf(item)
                     if (index !== -1) {
-                        this.dynamicValidateForm.domains.splice(index, 1)
+                        this.dynamicValidateForm.items.splice(index, 1)
                     }
                 },
-                addDomain() {
-                    this.dynamicValidateForm.domains.push({
+                addItem() {
+                    this.dynamicValidateForm.items.push({
                         value: '',
                         key: Date.now()
                     });
